@@ -18,8 +18,8 @@ const ObjectId = require("mongodb").ObjectId
 // posts
 
 // This section will help you get a list of all the records.
-/*
-userRoutes.get("/", session, async function (req, res) {
+
+userRoutes.get("/", async function (req, res) {
     if (req.session.user == undefined) {
         res.json({ error: "not logged in" })
         res.status(500)
@@ -78,9 +78,6 @@ function validateEmail(email) {
     // if email is used by another user
     let db_connect = dbo.getDb()
     let myquery = { email: email }
-
-    //TODO make this async
-
     db_connect.collection("users").findOne(myquery, function (err, result) {
         if (err) throw err
         if (result) {
@@ -109,7 +106,7 @@ function validatePassword(password) {
 }
 
 // This section will help you create a new record.
-userRoutes.post("/add", session,async function (req, res) {
+userRoutes.post("/add",async function (req, res) {
     let db_connect = dbo.getDb()
 
         //console.log("req: " + JSON.stringify(req.body));
@@ -147,7 +144,7 @@ userRoutes.post("/add", session,async function (req, res) {
 })
 
 // This section will help you update a record by id.
-userRoutes.get("/update", session, async function (req, res) {
+userRoutes.get("/update", async function (req, res) {
     if (req.session === undefined || req.session.user?.username === undefined) {
         res.status(401).json({
             message: "You are not logged in.",
@@ -199,5 +196,18 @@ userRoutes.route("/remove").delete((req, response) => {
         response.json(obj)
     })
 })
-*/
+
+userRoutes.route("/leaderBoard").get((req, response) => {
+    let db_connect = dbo.getDb()
+    let myquery = { _id: ObjectId(req.params.id) }
+
+    db_connect.collection("users").find().sort(score).toArray(function (err, result) {
+        if (err) throw err
+        response.json(result)
+    }
+    )
+
+})
+
+
 module.exports = userRoutes

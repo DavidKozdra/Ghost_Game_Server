@@ -12,7 +12,7 @@ const ObjectId = require("mongodb").ObjectId
 //get all items
 AuthLoginRoute.get("/getAllItems", async function (req, res) {
     let db_connect = dbo.getDb()
-    let items = await db_connect.collection("Items").find({}).toArray()
+    let items = await db_connect.collection("Item").find({}).toArray()
     res.json(items)
 })
 
