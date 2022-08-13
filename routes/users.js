@@ -28,7 +28,7 @@ userRoutes.get("/", async function (req, res) {
     }
     let db_connect = dbo.getDb("Ghost_game")
     db_connect
-        .collection("users")
+        .collection("User")
         .find({})
         .toArray(function (err, result) {
             if (err) throw err
@@ -42,7 +42,7 @@ userRoutes.get("/", async function (req, res) {
 userRoutes.route("/:id").get(function (req, res) {
     let db_connect = dbo.getDb()
     let myquery = { _id: ObjectId(req.params.id) }
-    db_connect.collection("users").findOne(myquery, function (err, result) {
+    db_connect.collection("User").findOne(myquery, function (err, result) {
         if (err) throw err
         res.json(result)
     })
@@ -54,7 +54,7 @@ function validateName(username) {
     // check if user exists
     let db_connect = dbo.getDb()
     let myquery = { username: username }
-    db_connect.collection("users").findOne(myquery, function (err, result) {
+    db_connect.collection("User").findOne(myquery, function (err, result) {
         if (err) throw err
         if (result) {
             return false
@@ -78,7 +78,7 @@ function validateEmail(email) {
     // if email is used by another user
     let db_connect = dbo.getDb()
     let myquery = { email: email }
-    db_connect.collection("users").findOne(myquery, function (err, result) {
+    db_connect.collection("User").findOne(myquery, function (err, result) {
         if (err) throw err
         if (result) {
             return false
@@ -128,6 +128,8 @@ userRoutes.post("/add",async function (req, res) {
         email: req.body.email,
         password: hash,
     }
+
+    console.log("userObj: " + JSON.stringify(userObj));
     // validation
     if (!validateName(userObj.username))
         return res.status(401).send("error: username invalid")
@@ -137,7 +139,7 @@ userRoutes.post("/add",async function (req, res) {
         return res.status(401).send("error: password invalid")
 
     // insert user into database
-    db_connect.collection("users").insertOne(userObj, function (err, response) {
+    db_connect.collection("User").insertOne(userObj, function (err, response) {
         if (err) throw err
         res.json(response)
     })
@@ -178,7 +180,7 @@ userRoutes.get("/update", async function (req, res) {
         },
     }
     db_connect
-        .collection("users")
+        .collection("User")
         .updateOne(myquery, newvalues, function (err, response) {
             if (err) throw err
             //console.log("1 document updated");
@@ -190,7 +192,7 @@ userRoutes.get("/update", async function (req, res) {
 userRoutes.route("/remove").delete((req, response) => {
     let db_connect = dbo.getDb()
     let myquery = { _id: ObjectId(req.params.id) }
-    db_connect.collection("users").deleteOne(myquery, function (err, obj) {
+    db_connect.collection("User").deleteOne(myquery, function (err, obj) {
         if (err) throw err
         console.log("1 document deleted")
         response.json(obj)
@@ -201,7 +203,7 @@ userRoutes.route("/leaderBoard").get((req, response) => {
     let db_connect = dbo.getDb()
     let myquery = { _id: ObjectId(req.params.id) }
 
-    db_connect.collection("users").find().sort(score).toArray(function (err, result) {
+    db_connect.collection("User").find().sort(score).toArray(function (err, result) {
         if (err) throw err
         response.json(result)
     }
